@@ -47,8 +47,8 @@ func validateRBD(rbd model.RBD) error {
 }
 
 func rbdNotFound(message string) bool {
-	const notFound = "No such file"
-	return strings.Contains(message, notFound)
+	const notFound = "NO SUCH FILE"
+	return strings.Contains(strings.ToUpper(message), notFound)
 }
 
 func rbdCreate(name string, size uint64) error {

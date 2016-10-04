@@ -1,9 +1,9 @@
-APDIR=$(shell go list ./... | grep -v /vendor/)
+APP_DIR_LIST=$(shell go list ./... | grep -v /vendor/)
 GOBIN=$(GOPATH)/bin
 
 build:
-	CGO_ENABLED=0 go install -tags netgo ${APDIR}
-	go fmt $(APDIR)
+	CGO_ENABLED=0 go install -tags netgo ${APP_DIR_LIST}
+	go fmt $(APP_DIR_LIST)
 
 bin/govendor: verify_gopath
 	go get -v -u github.com/kardianos/govendor
@@ -46,3 +46,6 @@ build_anywhere: prepare_dirs
 	rm -Rf application && mkdir application
 	cp -RL ./tap-ceph-broker ./application/tap-ceph-broker
 	rm -Rf ./temp
+
+test: verify_gopath
+	go test --cover $(APP_DIR_LIST)
