@@ -1,0 +1,91 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "XZ/RQf9rdLpFHKhstEckOpGqsOU=",
+			"path": "github.com/gocraft/web",
+			"revision": "054fd625232f8041af2c88320633047eb0574dc0",
+			"revisionTime": "2015-12-31T19:58:24Z"
+		},
+		{
+			"checksumSHA1": "qNkIUixj3jVNhiqKG/g6G+MbAJE=",
+			"path": "github.com/golang/mock/mockgen",
+			"revision": "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9",
+			"revisionTime": "2016-01-21T18:51:14Z"
+		},
+		{
+			"checksumSHA1": "wGZhkbTbPQijd6l6ROwbtPeCr8E=",
+			"path": "github.com/golang/mock/mockgen/model",
+			"revision": "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9",
+			"revisionTime": "2016-01-21T18:51:14Z"
+		},
+		{
+			"checksumSHA1": "BoXdUBWB8UnSlFlbnuTQaPqfCGk=",
+			"path": "github.com/op/go-logging",
+			"revision": "970db520ece77730c7e4724c61121037378659d9",
+			"revisionTime": "2016-03-15T20:05:05Z"
+		},
+		{
+			"checksumSHA1": "+lWkpwANH0yj1uJchiYkyLDOnu4=",
+			"path": "github.com/trustedanalytics/tap-api-service",
+			"revision": "1aec5c80ed1de447b34708dea92e6f63ad6df23e",
+			"revisionTime": "2016-09-27T13:15:50Z"
+		},
+		{
+			"checksumSHA1": "cM0ZxeSQP3GF81Aqxack5HtizC4=",
+			"path": "github.com/trustedanalytics/tap-api-service",
+			"revision": "c80ef6b6149c2a0d1fb80034095098453c63d0fe",
+			"revisionTime": "2016-09-05T13:15:35Z"
+		},
+		{
+			"checksumSHA1": "ief6+0C0jwb0Q/GXIN5gdpEi4IY=",
+			"path": "github.com/trustedanalytics/tap-api-service/api",
+			"revision": "1aec5c80ed1de447b34708dea92e6f63ad6df23e",
+			"revisionTime": "2016-09-27T13:15:50Z"
+		},
+		{
+			"checksumSHA1": "reDd/6zFMxeMijDRXCunbH3zfgE=",
+			"path": "github.com/trustedanalytics/tap-api-service/client",
+			"revision": "1aec5c80ed1de447b34708dea92e6f63ad6df23e",
+			"revisionTime": "2016-09-27T13:15:50Z"
+		},
+		{
+			"checksumSHA1": "pWkKQr7lCmmiiyevc8EtCLcb10w=",
+			"path": "github.com/trustedanalytics/tap-api-service/models",
+			"revision": "1aec5c80ed1de447b34708dea92e6f63ad6df23e",
+			"revisionTime": "2016-09-27T13:15:50Z"
+		},
+		{
+			"checksumSHA1": "r0fr4fZgLUtVB/a5iOnwtAVbE2g=",
+			"path": "github.com/trustedanalytics/tap-api-service/uaa-connector",
+			"revision": "1aec5c80ed1de447b34708dea92e6f63ad6df23e",
+			"revisionTime": "2016-09-27T13:15:50Z"
+		},
+		{
+			"checksumSHA1": "v0WKxge+pHY3J1VkZfecDRB8AWs=",
+			"path": "github.com/trustedanalytics/tap-api-service/user-management-connector",
+			"revision": "1aec5c80ed1de447b34708dea92e6f63ad6df23e",
+			"revisionTime": "2016-09-27T13:15:50Z"
+		},
+		{
+			"checksumSHA1": "bJJyTKEKJXJkr3VCBLxaUtPam8E=",
+			"path": "github.com/trustedanalytics/tap-go-common/http",
+			"revision": "67bbbdfb709ce32d375b1521585e2c9477acbddf",
+			"revisionTime": "2016-09-07T10:22:09Z"
+		},
+		{
+			"checksumSHA1": "Ap8GciatUYbMeh2VM16jkpO7Xfk=",
+			"path": "github.com/trustedanalytics/tap-go-common/logger",
+			"revision": "67bbbdfb709ce32d375b1521585e2c9477acbddf",
+			"revisionTime": "2016-09-07T10:22:09Z"
+		},
+		{
+			"checksumSHA1": "Un6IGysw7AywNCfsi2NDTuPV6CU=",
+			"path": "github.com/trustedanalytics/tap-go-common/util",
+			"revision": "67bbbdfb709ce32d375b1521585e2c9477acbddf",
+			"revisionTime": "2016-09-07T10:22:09Z"
+		}
+	],
+	"rootPath": "github.com/trustedanalytics/tap-ceph-broker"
+}

@@ -1,0 +1,49 @@
+swagger: '2.0'
+info:
+  title: tap-ceph-broker
+  version: "1"
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /api/v1/rbd:
+    post:
+      summary: Create and format ceph RBD
+      parameters:
+        - name: rbd
+          in: body
+          required: true
+          schema:
+              $ref: "#/definitions/RBD"
+      responses:
+        200:
+          description: RBD has been created and formatted
+          schema:
+            $ref: "#/definitions/RBD"
+        500:
+          description: Unexpected error
+  /api/v1/rbd/{imageName}:
+    delete:
+      summary: Delete RBD
+      parameters:
+        - name: imageName
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: RBD deleted
+        404:
+          description: No such RBD
+        500:
+          description: Unexpected error
+definitions:
+  RBD:
+    type: object
+    properties:
+      imageName:
+        type: string
+      size:
+        type: integer
+        format: uint64
