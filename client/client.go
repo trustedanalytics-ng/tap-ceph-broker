@@ -30,7 +30,7 @@ import (
 // CephBroker delivers an interface to access ceph-broker functionality to the client
 type CephBroker interface {
 	CreateRBD(device model.RBD) (int, error)
-	DeleteRBD(name string) (string, int, error)
+	DeleteRBD(name string) (int, error)
 }
 
 // CephBrokerConnector keeps data required to connect to the service
