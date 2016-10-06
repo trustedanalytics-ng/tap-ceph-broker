@@ -18,6 +18,12 @@ package model
 
 // RBD represents ceph RBD instance
 type RBD struct {
-	ImageName string `json:"imageName"`
-	Size      uint64 `json:"size"`
+	ImageName  string `json:"imageName"`
+	Size       uint64 `json:"size"`
+	FileSystem string `json:"fileSystem"`
 }
+
+const (
+	XFS  = "xfs"
+	EXT4 = "ext4"
+)

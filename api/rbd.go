@@ -32,6 +32,13 @@ const rbdPath = "/usr/bin/rbd"
 
 var errNotFound = errors.New("not found")
 
+func validateSize(size uint64) error {
+	if size == 0 {
+		return errors.New("rbd size cannot be null")
+	}
+	return nil
+}
+
 func validateImageName(name string) error {
 	if len(name) == 0 {
 		return errors.New("rbd image name is empty")
@@ -39,9 +46,22 @@ func validateImageName(name string) error {
 	return nil
 }
 
+func validateFileSystem(input string) error {
+	allowedFS := []string{model.EXT4, model.XFS}
+	for _, fs := range allowedFS {
+		if fs == input {
+			return nil
+		}
+	}
+	return fmt.Errorf("file system %q is not allowed", input)
+}
+
 func validateRBD(rbd model.RBD) error {
-	if rbd.Size == 0 {
-		return errors.New("rbd size cannot be null")
+	if err := validateSize(rbd.Size); err != nil {
+		return err
+	}
+	if err := validateFileSystem(rbd.FileSystem); err != nil {
+		return err
 	}
 	return validateImageName(rbd.ImageName)
 }
@@ -79,8 +99,8 @@ func rbdRemove(name string) error {
 	return nil
 }
 
-func formatDevice(device string) error {
-	_, err := exec.Command("mkfs.xfs", device).Output()
+func formatDevice(device string, fs string) error {
+	_, err := exec.Command("/sbin/mkfs."+fs, device).Output()
 	return err
 }
 
@@ -92,7 +112,7 @@ func createAndFormatRBD(input model.RBD) (model.RBD, error) {
 	if err != nil {
 		return model.RBD{}, fmt.Errorf("cannot map RBD image %q: %v", input.ImageName, err)
 	}
-	if err = formatDevice(device); err != nil {
+	if err = formatDevice(device, input.FileSystem); err != nil {
 		return model.RBD{}, fmt.Errorf("cannot format device %q: %v", device, err)
 	}
 	if err = rbdUnmap(input.ImageName); err != nil {

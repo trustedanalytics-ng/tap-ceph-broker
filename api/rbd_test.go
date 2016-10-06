@@ -27,12 +27,13 @@ func TestValidateRBD(t *testing.T) {
 		rbd     model.RBD
 		isError bool
 	}{
-		{model.RBD{ImageName: "", Size: 100}, true},
-		{model.RBD{ImageName: "", Size: 0}, true},
-		{model.RBD{ImageName: "someimage", Size: 0}, true},
-		{model.RBD{ImageName: "some image", Size: 100}, false},
-		{model.RBD{ImageName: "some image", Size: 1024 * 1024}, false},
-		{model.RBD{ImageName: "some image_123", Size: 1024 * 1024 * 1000 * 9}, false},
+		{model.RBD{ImageName: "", Size: 100, FileSystem: model.XFS}, true},
+		{model.RBD{ImageName: "", Size: 0, FileSystem: model.XFS}, true},
+		{model.RBD{ImageName: "someimage", Size: 0, FileSystem: model.EXT4}, true},
+		{model.RBD{ImageName: "someimage", Size: 200, FileSystem: "wrongFS"}, true},
+		{model.RBD{ImageName: "some image", Size: 100, FileSystem: model.EXT4}, false},
+		{model.RBD{ImageName: "some image", Size: 1024 * 1024, FileSystem: model.XFS}, false},
+		{model.RBD{ImageName: "some image_123", Size: 1024 * 1024 * 1000 * 9, FileSystem: model.XFS}, false},
 	}
 
 	for _, tc := range testCases {
