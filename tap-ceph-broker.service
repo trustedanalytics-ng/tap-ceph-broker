@@ -1,0 +1,12 @@
+[Unit]
+Description=Application for managing CEPH resources needed by TAP core services
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/tap-ceph-broker
+ExecStart=/usr/bin/tap-ceph-broker
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
