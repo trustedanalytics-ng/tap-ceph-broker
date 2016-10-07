@@ -45,5 +45,9 @@ definitions:
       imageName:
         type: string
       size:
+        description: rbd size in MBs
         type: integer
         format: uint64
+      fileSystem:
+        description: file system used to format rbd [ext4, xfs]
+        type: string
