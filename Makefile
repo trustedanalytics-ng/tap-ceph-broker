@@ -47,5 +47,12 @@ build_anywhere: prepare_dirs
 	cp -RL ./tap-ceph-broker ./application/tap-ceph-broker
 	rm -Rf ./temp
 
+build_rpm: build_anywhere
+	mkdir -p ./rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+	ln -s $(PWD) ./rpmbuild/SOURCES/tap-ceph-broker
+	rpmbuild --define '_topdir $(PWD)/rpmbuild' --define 'pkg_version $(PKG_VERSION)' -bb tap-ceph-broker.spec
+	mv ./rpmbuild/RPMS/x86_64/tap-ceph-broker*rpm ./
+	rm -rf ./rpmbuild
+
 test: verify_gopath
 	go test --cover $(APP_DIR_LIST)
