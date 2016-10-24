@@ -7,6 +7,14 @@ produces:
 consumes:
   - application/json
 paths:
+  /healthz:
+    get:
+      summary: Get health status
+      responses:
+        200:
+          description: OK
+        500:
+          description: Unexpected error
   /api/v1/rbd:
     post:
       summary: Create and format ceph RBD
