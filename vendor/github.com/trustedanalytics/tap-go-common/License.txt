@@ -13,25 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package util
-
-import (
-	"os"
-	"os/signal"
-	"sync"
-)
-
-func GetTerminationObserverChannel() chan os.Signal {
-	channel := make(chan os.Signal, 1)
-	signal.Notify(channel, os.Interrupt)
-	return channel
-}
-
-func TerminationObserver(waitGroup *sync.WaitGroup, appName string) {
-	<-GetTerminationObserverChannel()
-	logger.Info(appName, "is going to be stopped now...")
-	waitGroup.Wait()
-	logger.Info(appName, "stopped!")
-	os.Exit(0)
-}

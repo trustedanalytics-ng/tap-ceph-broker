@@ -26,10 +26,10 @@ import (
 
 	"github.com/gocraft/web"
 
-	"github.com/trustedanalytics/tap-go-common/logger"
+	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
 )
 
-var logger = logger_wrapper.InitLogger("api")
+var logger, _ = commonLogger.InitLogger("api")
 
 type MessageResponse struct {
 	Message string `json:"message"`
@@ -37,7 +37,7 @@ type MessageResponse struct {
 
 func UuidToShortDnsName(uuid string) string {
 	if len(uuid) < 15 {
-		return  "x" + strings.Replace(uuid, "-", "", -1)
+		return "x" + strings.Replace(uuid, "-", "", -1)
 	}
 	return "x" + strings.Replace(uuid[0:15], "-", "", -1)
 }
@@ -87,6 +87,14 @@ func WriteJson(rw web.ResponseWriter, response interface{}, status_code int) err
 	rw.WriteHeader(status_code)
 	fmt.Fprintf(rw, "%s", string(b))
 	return nil
+}
+
+func WriteJsonOrError(rw web.ResponseWriter, response interface{}, status int, err error) error {
+	if status >= 400 {
+		GenericRespond(status, rw, err)
+		return err
+	}
+	return WriteJson(rw, response, status)
 }
 
 func Respond500(rw web.ResponseWriter, err error) {

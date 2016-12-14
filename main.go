@@ -17,33 +17,43 @@
 package main
 
 import (
-	"github.com/gocraft/web"
-
 	"os"
 
-	"github.com/trustedanalytics/tap-ceph-broker/api"
+	"github.com/gocraft/web"
+
 	httpGoCommon "github.com/trustedanalytics/tap-go-common/http"
+	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
+
+	"github.com/trustedanalytics/tap-ceph-broker/api"
 )
+
+const (
+	sslCertLocationEnvVarName = "CEPH_BROKER_SSL_CERT_LOCATION"
+	sslKeyLocationEnvVarName  = "CEPH_BROKER_SSL_KEY_LOCATION"
+)
+
+var logger, _ = commonLogger.InitLogger("main")
 
 func main() {
 	context := api.Context{}
 
-	router := web.New(context)
+	router := createRouter(&context)
+
+	startServer(router)
+}
+
+func createRouter(context *api.Context) *web.Router {
+	router := web.New(*context)
 	router.Middleware(web.LoggerMiddleware)
 
 	router.Get("/healthz", context.GetHealthz)
 
-	apiRouter := router.Subrouter(context, "/api/v1")
-	route(apiRouter, &context)
-	v1AliasRouter := router.Subrouter(context, "/api/v1.0")
-	route(v1AliasRouter, &context)
+	apiRouter := router.Subrouter(*context, "/api/v1")
+	route(apiRouter, context)
+	v1AliasRouter := router.Subrouter(*context, "/api/v1.0")
+	route(v1AliasRouter, context)
 
-	if os.Getenv("CEPH_BROKER_SSL_CERT_FILE_LOCATION") != "" {
-		httpGoCommon.StartServerTLS(os.Getenv("CEPH_BROKER_SSL_CERT_FILE_LOCATION"),
-			os.Getenv("CEPH_BROKER_SSL_CERT_FILE_LOCATION"), router)
-	} else {
-		httpGoCommon.StartServer(router)
-	}
+	return router
 }
 
 func route(router *web.Router, context *api.Context) {
@@ -51,4 +61,14 @@ func route(router *web.Router, context *api.Context) {
 
 	router.Post("/rbd", (*context).CreateRBD)
 	router.Delete("/rbd/:imageName", (*context).DeleteRBD)
+}
+
+func startServer(router *web.Router) {
+	cert := os.Getenv(sslCertLocationEnvVarName)
+	key := os.Getenv(sslKeyLocationEnvVarName)
+	if cert == "" || key == "" {
+		logger.Fatalf("Only SSL protocol is supported. You need to provide environment variables %q and %q.", sslCertLocationEnvVarName, sslKeyLocationEnvVarName)
+	} else {
+		httpGoCommon.StartServerTLS(cert, key, router)
+	}
 }
