@@ -18,6 +18,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -78,10 +79,6 @@ func callModelTemplateWithBody(callFunc CallFunc, apiConnector ApiConnector, req
 		return status, err
 	}
 
-	if status != expectedStatus {
-		return status, getWrongStatusError(status, expectedStatus, string(body))
-	}
-
 	if result != "" {
 		err = json.Unmarshal(body, result)
 		if err != nil {
@@ -89,9 +86,12 @@ func callModelTemplateWithBody(callFunc CallFunc, apiConnector ApiConnector, req
 		}
 	}
 
+	if status != expectedStatus {
+		return status, getWrongStatusError(status, expectedStatus, string(body))
+	}
 	return status, nil
 }
 
 func getWrongStatusError(status, expectedStatus int, body string) error {
-	return fmt.Errorf("Bad response status: %d, expected status was: % d. Response body: %s", status, expectedStatus, body)
+	return errors.New(fmt.Sprintf("Bad response status: %d, expected status was: % d. Response body: %s", status, expectedStatus, body))
 }

@@ -17,43 +17,33 @@
 package main
 
 import (
-	"os"
-
 	"github.com/gocraft/web"
 
-	httpGoCommon "github.com/trustedanalytics/tap-go-common/http"
-	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
+	"os"
 
 	"github.com/trustedanalytics/tap-ceph-broker/api"
+	httpGoCommon "github.com/trustedanalytics/tap-go-common/http"
 )
-
-const (
-	sslCertLocation = "CEPH_BROKER_SSL_CERT_LOCATION"
-	sslKeyLocation  = "CEPH_BROKER_SSL_KEY_LOCATION"
-)
-
-var logger, _ = commonLogger.InitLogger("main")
 
 func main() {
 	context := api.Context{}
 
-	router := createRouter(&context)
-
-	startServer(router)
-}
-
-func createRouter(context *api.Context) *web.Router {
-	router := web.New(*context)
+	router := web.New(context)
 	router.Middleware(web.LoggerMiddleware)
 
 	router.Get("/healthz", context.GetHealthz)
 
-	apiRouter := router.Subrouter(*context, "/api/v1")
-	route(apiRouter, context)
-	v1AliasRouter := router.Subrouter(*context, "/api/v1.0")
-	route(v1AliasRouter, context)
+	apiRouter := router.Subrouter(context, "/api/v1")
+	route(apiRouter, &context)
+	v1AliasRouter := router.Subrouter(context, "/api/v1.0")
+	route(v1AliasRouter, &context)
 
-	return router
+	if os.Getenv("CEPH_BROKER_SSL_CERT_FILE_LOCATION") != "" {
+		httpGoCommon.StartServerTLS(os.Getenv("CEPH_BROKER_SSL_CERT_FILE_LOCATION"),
+			os.Getenv("CEPH_BROKER_SSL_CERT_FILE_LOCATION"), router)
+	} else {
+		httpGoCommon.StartServer(router)
+	}
 }
 
 func route(router *web.Router, context *api.Context) {
@@ -61,14 +51,4 @@ func route(router *web.Router, context *api.Context) {
 
 	router.Post("/rbd", (*context).CreateRBD)
 	router.Delete("/rbd/:imageName", (*context).DeleteRBD)
-}
-
-func startServer(router *web.Router) {
-	cert := os.Getenv(sslCertLocation)
-	key := os.Getenv(sslKeyLocation)
-	if cert == "" || key == "" {
-		logger.Fatalf("Only SSL protocol is supported. You need to provide environment variables %q and %q.", sslCertLocation, sslKeyLocation)
-	} else {
-		httpGoCommon.StartServerTLS(cert, key, router)
-	}
 }
