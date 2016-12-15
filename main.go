@@ -28,8 +28,8 @@ import (
 )
 
 const (
-	sslCertLocationEnvVarName = "CEPH_BROKER_SSL_CERT_LOCATION"
-	sslKeyLocationEnvVarName  = "CEPH_BROKER_SSL_KEY_LOCATION"
+	sslCertLocation = "CEPH_BROKER_SSL_CERT_LOCATION"
+	sslKeyLocation  = "CEPH_BROKER_SSL_KEY_LOCATION"
 )
 
 var logger, _ = commonLogger.InitLogger("main")
@@ -64,10 +64,10 @@ func route(router *web.Router, context *api.Context) {
 }
 
 func startServer(router *web.Router) {
-	cert := os.Getenv(sslCertLocationEnvVarName)
-	key := os.Getenv(sslKeyLocationEnvVarName)
+	cert := os.Getenv(sslCertLocation)
+	key := os.Getenv(sslKeyLocation)
 	if cert == "" || key == "" {
-		logger.Fatalf("Only SSL protocol is supported. You need to provide environment variables %q and %q.", sslCertLocationEnvVarName, sslKeyLocationEnvVarName)
+		logger.Fatalf("Only SSL protocol is supported. You need to provide environment variables %q and %q.", sslCertLocation, sslKeyLocation)
 	} else {
 		httpGoCommon.StartServerTLS(cert, key, router)
 	}
