@@ -31,6 +31,7 @@ import (
 type CephBroker interface {
 	CreateRBD(device model.RBD) (int, error)
 	DeleteRBD(name string) (int, error)
+	GetCephBrokerHealth() (int, error)
 }
 
 // CephBrokerConnector keeps data required to connect to the service
@@ -95,13 +96,13 @@ func (t *CephBrokerConnector) DeleteRBD(name string) (int, error) {
 }
 
 // GetCephBrokerHealth calls healthz and verifies response status code
-func (t *CephBrokerConnector) GetCephBrokerHealth() error {
+func (t *CephBrokerConnector) GetCephBrokerHealth() (int, error) {
 	url := fmt.Sprintf("%s/healthz", t.Address)
 
 	auth := brokerHttp.BasicAuth{User: t.Username, Password: t.Password}
 	status, _, err := brokerHttp.RestGET(url, brokerHttp.GetBasicAuthHeader(&auth), t.Client)
 	if status != http.StatusOK {
-		err = errors.New("invalid health status: " + string(status))
+		return http.StatusInternalServerError, fmt.Errorf("invalid health status: %v", err)
 	}
-	return err
+	return http.StatusOK, nil
 }
