@@ -14,10 +14,12 @@
 #
 APP_DIR_LIST=$(shell go list ./... | grep -v /vendor/)
 GOBIN=$(GOPATH)/bin
+APP_NAME=tap-ceph-broker
 
-build:
-	CGO_ENABLED=0 go install -tags netgo ${APP_DIR_LIST}
+build: verify_gopath
 	go fmt $(APP_DIR_LIST)
+	CGO_ENABLED=0 go install -tags netgo $(APP_DIR_LIST)
+	mkdir -p application && cp -f $(GOBIN)/$(APP_NAME) ./application/$(APP_NAME)
 
 bin/govendor: verify_gopath
 	go get -v -u github.com/kardianos/govendor
@@ -33,7 +35,7 @@ deps_fetch_specific: bin/govendor
 
 deps_update_tap: verify_gopath
 	$(GOBIN)/govendor update github.com/trustedanalytics/...
-	rm -Rf vendor/github.com/trustedanalytics/tap-ceph-broker
+	$(GOBIN)/govendor remove github.com/trustedanalytics/$(APP_NAME)/...
 	@echo "Done"
 
 verify_gopath:

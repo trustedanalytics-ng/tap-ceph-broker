@@ -77,21 +77,21 @@ func makeRequest(reqType, url, body, contentType, authHeader string, client *htt
 
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Error("ERROR: Make http request "+reqType, err)
+		logger.Error(fmt.Sprintf("sending http request %v failed: %v", reqType, err))
 		return -1, nil, err
 	}
 	ret_code := resp.StatusCode
 	defer resp.Body.Close()
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		logger.Error("ERROR: Make http request "+reqType, err)
+		logger.Error(fmt.Sprintf("reading http request %v response body failed: %v", reqType, err))
 		return -1, nil, err
 	}
 
 	if resp.Header.Get("Content-Type") == "application/octet-stream" {
-		logger.Info("CODE:", ret_code, "BODY: [ Binary Data ]", resp.ContentLength)
+		logger.Debug("CODE:", ret_code, "BODY: [ Binary Data ]", resp.ContentLength)
 	} else {
-		logger.Info("CODE:", ret_code, "BODY:", string(data))
+		logger.Debug("CODE:", ret_code, "BODY:", string(data))
 	}
 
 	return ret_code, data, nil
@@ -127,7 +127,7 @@ func binaryStreamRequest(url, authHeader string, client *http.Client, dest io.Wr
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		logger.Error("ERROR: Make http request ", err)
+		logger.Error("making http request failed", err)
 		return -1, err
 	}
 
@@ -135,17 +135,17 @@ func binaryStreamRequest(url, authHeader string, client *http.Client, dest io.Wr
 
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.Error("ERROR: Make http request ", err)
+		logger.Error("sending http request failed", err)
 		return -1, err
 	}
 
 	defer resp.Body.Close()
 	_, err = io.CopyN(dest, resp.Body, resp.ContentLength)
 	if err != nil {
-		logger.Error("ERROR: Make http request ", err)
+		logger.Error("copying http request response body failed", err)
 		return -1, err
 	}
 
-	logger.Info("CODE:", resp.StatusCode, "BODY: [ Binary Data ] Size:", resp.ContentLength)
+	logger.Debug("CODE:", resp.StatusCode, "BODY: [ Binary Data ] Size:", resp.ContentLength)
 	return resp.ContentLength, nil
 }

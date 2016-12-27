@@ -16,9 +16,9 @@
 
 package api
 
-import "github.com/trustedanalytics/tap-go-common/logger"
+import commonLogger "github.com/trustedanalytics/tap-go-common/logger"
 
-var logger = logger_wrapper.InitLogger("api")
+var logger, _ = commonLogger.InitLogger("api")
 
 // Context for ceph-broker main functionalities
 type Context struct {

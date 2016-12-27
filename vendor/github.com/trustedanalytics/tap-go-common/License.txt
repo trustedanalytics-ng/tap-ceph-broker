@@ -13,24 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package util
-
-import (
-	"os"
-	"strings"
-)
-
-func GetAddressFromKubernetesEnvs(componentName string) string {
-	serviceName := os.Getenv(componentName + "_KUBERNETES_SERVICE_NAME")
-	if serviceName != "" {
-		hostname := os.Getenv(strings.ToUpper(serviceName) + "_SERVICE_HOST")
-		if hostname != "" {
-			port := os.Getenv(strings.ToUpper(serviceName) + "_SERVICE_PORT")
-			return hostname + ":" + port
-		}
-	}
-	return "localhost" + ":" + os.Getenv(componentName + "_PORT")
-}
-
-
