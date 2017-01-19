@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Intel Corporation
+ * Copyright (c) 2017 Intel Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,9 @@ func route(router *web.Router, context *api.Context) {
 
 	router.Post("/rbd", (*context).CreateRBD)
 	router.Delete("/rbd/:imageName", (*context).DeleteRBD)
+
+	router.Get("/lock", (*context).ListLocks)
+	router.Delete("/lock/:imageName/:lockName/:locker", (*context).DeleteLock)
 }
 
 func startServer(router *web.Router) {

@@ -106,3 +106,37 @@ func (t *CephBrokerConnector) GetCephBrokerHealth() (int, error) {
 	}
 	return http.StatusOK, nil
 }
+
+func (t *CephBrokerConnector) ListLocks() ([]model.Lock, error) {
+	ret := []model.Lock{}
+
+	url := fmt.Sprintf("%s/api/v1/lock", t.Address)
+
+	auth := brokerHttp.BasicAuth{User: t.Username, Password: t.Password}
+	status, body, err := brokerHttp.RestGET(url, brokerHttp.GetBasicAuthHeader(&auth), t.Client)
+	if err != nil {
+		return ret, err
+	}
+	if status != http.StatusOK {
+		return ret, errors.New("bad response status: " + strconv.Itoa(status))
+	}
+
+	if err := json.Unmarshal(body, &ret); err != nil {
+		panic(err)
+	}
+
+	return ret, nil
+}
+
+func (t *CephBrokerConnector) DeleteLock(lock model.Lock) (int, error) {
+	url := fmt.Sprintf("%s/api/v1/lock/%s/%s/%s", t.Address, lock.ImageName, lock.LockName, lock.Locker)
+	auth := brokerHttp.BasicAuth{User: t.Username, Password: t.Password}
+	status, _, err := brokerHttp.RestDELETE(url, "", brokerHttp.GetBasicAuthHeader(&auth), t.Client)
+	if err != nil {
+		return status, err
+	}
+	if status != http.StatusNoContent {
+		return status, errors.New("bad response status: " + strconv.Itoa(status))
+	}
+	return status, nil
+}
