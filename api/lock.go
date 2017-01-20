@@ -39,7 +39,7 @@ func filter_nonempty_lines(lines []string) []string {
 
 func listImages() ([]string, error) {
 	logger.Debug("listImages")
-y	output, err := exec.Command(rbdPath, "list").CombinedOutput()
+	output, err := exec.Command(rbdPath, "list").CombinedOutput()
 	if err != nil {
 		return []string{}, err
 	}
