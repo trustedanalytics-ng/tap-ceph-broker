@@ -23,8 +23,9 @@ import (
 	"strings"
 
 	"github.com/gocraft/web"
+
 	"github.com/trustedanalytics/tap-ceph-broker/model"
-	"github.com/trustedanalytics/tap-go-common/util"
+	commonHttp "github.com/trustedanalytics/tap-go-common/http"
 )
 
 func filter_nonempty_lines(lines []string) []string {
@@ -116,13 +117,13 @@ func removeLock(lock model.Lock) error {
 func (c *Context) ListLocks(rw web.ResponseWriter, req *web.Request) {
 	locks, err := allLocks()
 	if err != nil {
-		util.Respond500(rw, err)
+		commonHttp.Respond500(rw, err)
 		return
 	}
 
-	if err = util.WriteJson(rw, locks, http.StatusOK); err != nil {
+	if err = commonHttp.WriteJson(rw, locks, http.StatusOK); err != nil {
 		err = fmt.Errorf("cannot parse response: %v", err)
-		util.Respond500(rw, err)
+		commonHttp.Respond500(rw, err)
 		return
 	}
 
@@ -137,7 +138,7 @@ func (c *Context) DeleteLock(rw web.ResponseWriter, req *web.Request) {
 
 	err := removeLock(lock)
 	if err != nil {
-		util.Respond500(rw, err)
+		commonHttp.Respond500(rw, err)
 		return
 	}
 

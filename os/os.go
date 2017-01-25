@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package api
+package os
 
-import (
-	"github.com/trustedanalytics/tap-ceph-broker/os"
-	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
-)
+import "os/exec"
 
-var logger, _ = commonLogger.InitLogger("api")
+type OS interface {
+	Command(name string, arg ...string) (string, error)
+}
 
-// Context for ceph-broker main functionalities
-type Context struct {
-	OS os.OS
+type StandardOS struct {
+}
+
+func (c StandardOS) Command(name string, arg ...string) (string, error) {
+	result, err := exec.Command(name, arg...).CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return string(result), nil
 }

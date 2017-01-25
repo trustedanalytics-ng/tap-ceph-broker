@@ -20,12 +20,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os/exec"
 	"strings"
 
 	"github.com/gocraft/web"
 	"github.com/trustedanalytics/tap-ceph-broker/model"
-	"github.com/trustedanalytics/tap-go-common/util"
+	commonHttp "github.com/trustedanalytics/tap-go-common/http"
 )
 
 const rbdPath = "/usr/bin/rbd"
@@ -71,26 +70,26 @@ func rbdNotFound(message string) bool {
 	return strings.Contains(strings.ToUpper(message), notFound)
 }
 
-func rbdCreate(name string, size uint64) error {
-	_, err := exec.Command(rbdPath, "create", name, fmt.Sprintf("--size=%d", size), "--image-feature=layering").Output()
+func (c *Context) rbdCreate(name string, size uint64) error {
+	_, err := c.OS.Command(rbdPath, "create", name, fmt.Sprintf("--size=%d", size), "--image-feature=layering")
 	return err
 }
 
-func rbdMap(name string) (string, error) {
-	out, err := exec.Command(rbdPath, "map", name).Output()
+func (c *Context) rbdMap(name string) (string, error) {
+	out, err := c.OS.Command(rbdPath, "map", name)
 	if err != nil {
 		return "", err
 	}
 	return strings.TrimSpace(string(out)), nil
 }
 
-func rbdUnmap(name string) error {
-	_, err := exec.Command(rbdPath, "unmap", name).Output()
+func (c *Context) rbdUnmap(name string) error {
+	_, err := c.OS.Command(rbdPath, "unmap", name)
 	return err
 }
 
-func rbdRemove(name string) error {
-	if output, err := exec.Command(rbdPath, "remove", name).CombinedOutput(); err != nil {
+func (c *Context) rbdRemove(name string) error {
+	if output, err := c.OS.Command(rbdPath, "remove", name); err != nil {
 		if rbdNotFound(string(output)) {
 			return errNotFound
 		}
@@ -99,23 +98,23 @@ func rbdRemove(name string) error {
 	return nil
 }
 
-func formatDevice(device string, fs string) error {
-	_, err := exec.Command("/sbin/mkfs."+fs, device).Output()
+func (c *Context) formatDevice(device string, fs string) error {
+	_, err := c.OS.Command("/sbin/mkfs."+fs, device)
 	return err
 }
 
-func createAndFormatRBD(input model.RBD) (model.RBD, error) {
-	if err := rbdCreate(input.ImageName, input.Size); err != nil {
+func (c *Context) createAndFormatRBD(input model.RBD) (model.RBD, error) {
+	if err := c.rbdCreate(input.ImageName, input.Size); err != nil {
 		return model.RBD{}, fmt.Errorf("cannot create RBD image with name %q and size %d: %v", input.ImageName, input.Size, err)
 	}
-	device, err := rbdMap(input.ImageName)
+	device, err := c.rbdMap(input.ImageName)
 	if err != nil {
 		return model.RBD{}, fmt.Errorf("cannot map RBD image %q: %v", input.ImageName, err)
 	}
-	if err = formatDevice(device, input.FileSystem); err != nil {
+	if err = c.formatDevice(device, input.FileSystem); err != nil {
 		return model.RBD{}, fmt.Errorf("cannot format device %q: %v", device, err)
 	}
-	if err = rbdUnmap(input.ImageName); err != nil {
+	if err = c.rbdUnmap(input.ImageName); err != nil {
 		return model.RBD{}, fmt.Errorf("cannot unmap RBD image %q: %v", input.ImageName, err)
 	}
 
@@ -125,25 +124,25 @@ func createAndFormatRBD(input model.RBD) (model.RBD, error) {
 // CreateRBD creates and formats RBD
 func (c *Context) CreateRBD(rw web.ResponseWriter, req *web.Request) {
 	input := model.RBD{}
-	err := util.ReadJson(req, &input)
+	err := commonHttp.ReadJson(req, &input)
 	if err != nil {
-		util.Respond400(rw, err)
+		commonHttp.Respond400(rw, err)
 		return
 	}
 	if err = validateRBD(input); err != nil {
-		util.Respond400(rw, err)
+		commonHttp.Respond400(rw, err)
 		return
 	}
 
-	rbd, err := createAndFormatRBD(input)
+	rbd, err := c.createAndFormatRBD(input)
 	if err != nil {
-		util.Respond500(rw, err)
+		commonHttp.Respond500(rw, err)
 		return
 	}
 
-	if err = util.WriteJson(rw, rbd, http.StatusOK); err != nil {
+	if err = commonHttp.WriteJson(rw, rbd, http.StatusOK); err != nil {
 		err = fmt.Errorf("cannot parse response: %v", err)
-		util.Respond500(rw, err)
+		commonHttp.Respond500(rw, err)
 		return
 	}
 }
@@ -153,17 +152,17 @@ func (c *Context) DeleteRBD(rw web.ResponseWriter, req *web.Request) {
 	name := req.PathParams["imageName"]
 
 	if err := validateImageName(name); err != nil {
-		util.Respond400(rw, err)
+		commonHttp.Respond400(rw, err)
 		return
 	}
 
-	if err := rbdRemove(name); err != nil {
+	if err := c.rbdRemove(name); err != nil {
 		errNew := fmt.Errorf("cannot delete RBD: %v", err)
 		if err == errNotFound {
-			util.Respond404(rw, errNew)
+			commonHttp.Respond404(rw, errNew)
 			return
 		}
-		util.Respond500(rw, errNew)
+		commonHttp.Respond500(rw, errNew)
 		return
 	}
 

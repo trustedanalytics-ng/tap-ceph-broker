@@ -21,10 +21,10 @@ import (
 
 	"github.com/gocraft/web"
 
+	"github.com/trustedanalytics/tap-ceph-broker/api"
+	innerOS "github.com/trustedanalytics/tap-ceph-broker/os"
 	httpGoCommon "github.com/trustedanalytics/tap-go-common/http"
 	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
-
-	"github.com/trustedanalytics/tap-ceph-broker/api"
 )
 
 const (
@@ -35,35 +35,12 @@ const (
 var logger, _ = commonLogger.InitLogger("main")
 
 func main() {
-	context := api.Context{}
+	sos := innerOS.StandardOS{}
+	context := api.Context{OS: sos}
 
-	router := createRouter(&context)
+	router := api.SetupRouter(&context)
 
 	startServer(router)
-}
-
-func createRouter(context *api.Context) *web.Router {
-	router := web.New(*context)
-	router.Middleware(web.LoggerMiddleware)
-
-	router.Get("/healthz", context.GetHealthz)
-
-	apiRouter := router.Subrouter(*context, "/api/v1")
-	route(apiRouter, context)
-	v1AliasRouter := router.Subrouter(*context, "/api/v1.0")
-	route(v1AliasRouter, context)
-
-	return router
-}
-
-func route(router *web.Router, context *api.Context) {
-	router.Middleware(context.BasicAuthorizeMiddleware)
-
-	router.Post("/rbd", (*context).CreateRBD)
-	router.Delete("/rbd/:imageName", (*context).DeleteRBD)
-
-	router.Get("/lock", (*context).ListLocks)
-	router.Delete("/lock/:imageName/:lockName/:locker", (*context).DeleteLock)
 }
 
 func startServer(router *web.Router) {
