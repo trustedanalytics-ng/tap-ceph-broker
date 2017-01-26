@@ -9,6 +9,12 @@
 			"revisionTime": "2015-12-31T19:58:24Z"
 		},
 		{
+			"checksumSHA1": "JSHl8b3nI8EWvzm+uyrIqj2Hiu4=",
+			"path": "github.com/golang/mock/gomock",
+			"revision": "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9",
+			"revisionTime": "2016-01-21T18:51:14Z"
+		},
+		{
 			"checksumSHA1": "qNkIUixj3jVNhiqKG/g6G+MbAJE=",
 			"path": "github.com/golang/mock/mockgen",
 			"revision": "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9",

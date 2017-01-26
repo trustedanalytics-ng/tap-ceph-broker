@@ -75,3 +75,4 @@ test: verify_gopath
 
 mock_update:
 	$(GOBIN)/mockgen -source=os/os.go -package=api -destination=api/os_mock_test.go
+	./add_license.sh
