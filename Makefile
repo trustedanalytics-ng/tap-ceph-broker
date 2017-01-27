@@ -74,5 +74,5 @@ test: verify_gopath
 	go test --cover $(APP_DIR_LIST)
 
 mock_update:
-	$(GOBIN)/mockgen -source=os/os.go -package=api -destination=api/os_mock_test.go
+	$(GOBIN)/mockgen -source=vendor/github.com/trustedanalytics/tap-go-common/os/os.go -package=api -destination=api/os_mock_test.go
 	./add_license.sh

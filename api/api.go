@@ -17,8 +17,8 @@
 package api
 
 import (
-	"github.com/trustedanalytics/tap-ceph-broker/os"
 	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
+	"github.com/trustedanalytics/tap-go-common/os"
 )
 
 var logger, _ = commonLogger.InitLogger("api")

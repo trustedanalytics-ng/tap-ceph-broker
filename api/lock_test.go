@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Intel Corporation
+ * Copyright (c) 2017 Intel Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,23 +42,27 @@ const (
 
 func TestListLocks(t *testing.T) {
 	tests := []struct {
-		images     []string
-		imageLocks []string
-		result     []model.Lock
+		testDescription string
+		images          []string
+		imageLocks      []string
+		result          []model.Lock
 	}{
 		{
-			images:     []string{},
-			imageLocks: []string{},
-			result:     []model.Lock{},
+			testDescription: "no images",
+			images:          []string{},
+			imageLocks:      []string{},
+			result:          []model.Lock{},
 		},
 		{
-			images:     []string{"sampleImage1"},
-			imageLocks: []string{"some wrong output"},
-			result:     []model.Lock{},
+			testDescription: "wrong list lock command output",
+			images:          []string{"sampleImage1"},
+			imageLocks:      []string{"some wrong output"},
+			result:          []model.Lock{},
 		},
 		{
-			images:     []string{sampleImage1},
-			imageLocks: []string{createLockList(createLockRow(sampleLocker1, sampleID1, sampleAddress1))},
+			testDescription: "one image has one lock",
+			images:          []string{sampleImage1},
+			imageLocks:      []string{createLockList(createLockRow(sampleLocker1, sampleID1, sampleAddress1))},
 			result: []model.Lock{
 				model.Lock{
 					ImageName: sampleImage1,
@@ -69,7 +73,8 @@ func TestListLocks(t *testing.T) {
 			},
 		},
 		{
-			images: []string{sampleImage1},
+			testDescription: "one image has two locks",
+			images:          []string{sampleImage1},
 			imageLocks: []string{
 				createLockList(
 					createLockRow(sampleLocker1, sampleID1, sampleAddress1),
@@ -91,7 +96,8 @@ func TestListLocks(t *testing.T) {
 			},
 		},
 		{
-			images: []string{sampleImage1, sampleImage2},
+			testDescription: "two images have one lock for each one",
+			images:          []string{sampleImage1, sampleImage2},
 			imageLocks: []string{
 				createLockList(createLockRow(sampleLocker1, sampleID1, sampleAddress1)),
 				createLockList(createLockRow(sampleLocker2, sampleID2, sampleAddress2)),
@@ -120,9 +126,9 @@ func TestListLocks(t *testing.T) {
 			Convey(fmt.Sprintf("For test case %d", i), func() {
 				images := strings.Join(test.images, "\n")
 				images = images + "\n"
-				asserts := []*gomock.Call{mock.osMock.EXPECT().Command(rbdPath, "list").Return(images, nil)}
+				asserts := []*gomock.Call{mock.osMock.EXPECT().ExecuteCommand(rbdPath, "list").Return(images, nil)}
 				for i := 0; i < len(test.images); i++ {
-					asserts = append(asserts, mock.osMock.EXPECT().Command(rbdPath, "lock", "list", test.images[i]).Return(test.imageLocks[i], nil))
+					asserts = append(asserts, mock.osMock.EXPECT().ExecuteCommand(rbdPath, "lock", "list", test.images[i]).Return(test.imageLocks[i], nil))
 				}
 				gomock.InOrder(
 					asserts...,
@@ -137,9 +143,7 @@ func TestListLocks(t *testing.T) {
 		}
 
 		Convey("When list command goes wrong", func() {
-			gomock.InOrder(
-				mock.osMock.EXPECT().Command(rbdPath, "list").Return("", fmt.Errorf("some error")),
-			)
+			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "list").Return("", fmt.Errorf("some error"))
 
 			_, status, err := client.ListLocks()
 
@@ -176,7 +180,7 @@ func TestDeleteLock(t *testing.T) {
 
 		Convey("When deleting lock exists", func() {
 			lock := model.Lock{ImageName: sampleImage1, LockName: sampleID1, Locker: sampleLocker1, Address: sampleAddress1}
-			mock.osMock.EXPECT().Command(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).Return("", nil)
+			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).Return("", nil)
 
 			status, err := client.DeleteLock(lock)
 
@@ -186,7 +190,7 @@ func TestDeleteLock(t *testing.T) {
 
 		Convey("When deleting lock return error", func() {
 			lock := model.Lock{ImageName: sampleImage1, LockName: sampleID1, Locker: sampleLocker1, Address: sampleAddress1}
-			mock.osMock.EXPECT().Command(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).Return("", fmt.Errorf("some error"))
+			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).Return("", fmt.Errorf("some error"))
 
 			status, err := client.DeleteLock(lock)
 

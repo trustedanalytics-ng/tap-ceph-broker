@@ -148,3 +148,11 @@ func HandleError(rw web.ResponseWriter, err error) {
 		Respond500(rw, err)
 	}
 }
+
+func RespondErrorByStatus(rw web.ResponseWriter, statusCode int, operationName string) {
+	if statusCode == http.StatusForbidden {
+		Respond403(rw)
+	} else {
+		GenericRespond(statusCode, rw, fmt.Errorf("error doing: %s", operationName))
+	}
+}

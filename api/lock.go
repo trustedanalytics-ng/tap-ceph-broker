@@ -27,7 +27,8 @@ import (
 	commonHttp "github.com/trustedanalytics/tap-go-common/http"
 )
 
-func filterNonemptyLines(lines []string) []string {
+func filterNonemptyLines(input string) []string {
+	lines := strings.Split(string(input), "\n")
 	nonemptyLines := []string{}
 	for _, l := range lines {
 		if len(strings.TrimSpace(l)) > 0 {
@@ -39,24 +40,24 @@ func filterNonemptyLines(lines []string) []string {
 
 func (c *Context) listImages() ([]string, error) {
 	logger.Debug("listImages")
-	output, err := c.OS.Command(rbdPath, "list")
+	output, err := c.OS.ExecuteCommand(rbdPath, "list")
 	if err != nil {
 		return []string{}, err
 	}
 	logger.Debug("listImages: rbd output: ", string(output))
-	imageLines := filterNonemptyLines(strings.Split(string(output), "\n"))
+	imageLines := filterNonemptyLines(output)
 	return imageLines, nil
 }
 
 func (c *Context) lockListForImage(imageName string) ([]model.Lock, error) {
 	logger.Debug("lockListForImage: getting locks for image", imageName)
 	out := []model.Lock{}
-	output, err := c.OS.Command(rbdPath, "lock", "list", imageName)
+	output, err := c.OS.ExecuteCommand(rbdPath, "lock", "list", imageName)
 	if err != nil {
 		return out, err
 	}
 	logger.Debug("lockListForImage: rbd output: ", string(output))
-	lockLines := filterNonemptyLines(strings.Split(string(output), "\n"))
+	lockLines := filterNonemptyLines(output)
 
 	for i, nonemptyLockLine := range lockLines {
 		if i < 2 {
@@ -95,18 +96,16 @@ func (c *Context) allLocks() ([]model.Lock, error) {
 		if err != nil {
 			return locks, err
 		}
-		for _, imageLock := range imageLocks {
-			locks = append(locks, imageLock)
-		}
+		locks = append(locks, imageLocks...)
 	}
 	return locks, nil
 }
 
 func (c *Context) removeLock(lock model.Lock) error {
 	logger.Info("removeLock:", lock)
-	output, err := c.OS.Command(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker)
+	output, err := c.OS.ExecuteCommand(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker)
 	if err != nil {
-		logger.Info("removeLock: FAILED:", err, string(output))
+		logger.Error("removeLock: FAILED:", err, string(output))
 		return err
 	}
 	logger.Info("removeLock: SUCCESS.")

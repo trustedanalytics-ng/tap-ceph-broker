@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Intel Corporation
+ * Copyright (c) 2017 Intel Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package os
 import "os/exec"
 
 type OS interface {
-	Command(name string, arg ...string) (string, error)
+	ExecuteCommand(name string, arg ...string) (string, error)
 }
 
 type StandardOS struct {
 }
 
-func (c StandardOS) Command(name string, arg ...string) (string, error) {
+func (c StandardOS) ExecuteCommand(name string, arg ...string) (string, error) {
 	result, err := exec.Command(name, arg...).CombinedOutput()
 	if err != nil {
 		return "", err

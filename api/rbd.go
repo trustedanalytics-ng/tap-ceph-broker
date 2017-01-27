@@ -71,12 +71,12 @@ func rbdNotFound(message string) bool {
 }
 
 func (c *Context) rbdCreate(name string, size uint64) error {
-	_, err := c.OS.Command(rbdPath, "create", name, fmt.Sprintf("--size=%d", size), "--image-feature=layering")
+	_, err := c.OS.ExecuteCommand(rbdPath, "create", name, fmt.Sprintf("--size=%d", size), "--image-feature=layering")
 	return err
 }
 
 func (c *Context) rbdMap(name string) (string, error) {
-	out, err := c.OS.Command(rbdPath, "map", name)
+	out, err := c.OS.ExecuteCommand(rbdPath, "map", name)
 	if err != nil {
 		return "", err
 	}
@@ -84,12 +84,12 @@ func (c *Context) rbdMap(name string) (string, error) {
 }
 
 func (c *Context) rbdUnmap(name string) error {
-	_, err := c.OS.Command(rbdPath, "unmap", name)
+	_, err := c.OS.ExecuteCommand(rbdPath, "unmap", name)
 	return err
 }
 
 func (c *Context) rbdRemove(name string) error {
-	if output, err := c.OS.Command(rbdPath, "remove", name); err != nil {
+	if output, err := c.OS.ExecuteCommand(rbdPath, "remove", name); err != nil {
 		if rbdNotFound(string(output)) {
 			return errNotFound
 		}
@@ -99,7 +99,7 @@ func (c *Context) rbdRemove(name string) error {
 }
 
 func (c *Context) formatDevice(device string, fs string) error {
-	_, err := c.OS.Command("/sbin/mkfs."+fs, device)
+	_, err := c.OS.ExecuteCommand("/sbin/mkfs."+fs, device)
 	return err
 }
 

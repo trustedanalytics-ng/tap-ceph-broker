@@ -38,10 +38,10 @@ func TestCreateRBD(t *testing.T) {
 
 		Convey("When os commands are executed correctly", func() {
 			gomock.InOrder(
-				mock.osMock.EXPECT().Command(rbdPath, "create", sampleName, fmt.Sprintf("--size=%d", sampleSize), "--image-feature=layering").Return("", nil),
-				mock.osMock.EXPECT().Command(rbdPath, "map", sampleName).Return(sampleDevice, nil),
-				mock.osMock.EXPECT().Command("/sbin/mkfs."+sampleFS, sampleDevice).Return("", nil),
-				mock.osMock.EXPECT().Command(rbdPath, "unmap", sampleName).Return("", nil),
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "create", sampleName, fmt.Sprintf("--size=%d", sampleSize), "--image-feature=layering").Return("", nil),
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "map", sampleName).Return(sampleDevice, nil),
+				mock.osMock.EXPECT().ExecuteCommand("/sbin/mkfs."+sampleFS, sampleDevice).Return("", nil),
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "unmap", sampleName).Return("", nil),
 			)
 
 			status, err := client.CreateRBD(device)
@@ -52,9 +52,9 @@ func TestCreateRBD(t *testing.T) {
 
 		Convey("When format command goes wrong", func() {
 			gomock.InOrder(
-				mock.osMock.EXPECT().Command(rbdPath, "create", sampleName, fmt.Sprintf("--size=%d", sampleSize), "--image-feature=layering").Return("", nil),
-				mock.osMock.EXPECT().Command(rbdPath, "map", sampleName).Return(sampleDevice, nil),
-				mock.osMock.EXPECT().Command("/sbin/mkfs."+sampleFS, sampleDevice).Return("", fmt.Errorf("some error!")),
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "create", sampleName, fmt.Sprintf("--size=%d", sampleSize), "--image-feature=layering").Return("", nil),
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "map", sampleName).Return(sampleDevice, nil),
+				mock.osMock.EXPECT().ExecuteCommand("/sbin/mkfs."+sampleFS, sampleDevice).Return("", fmt.Errorf("some error!")),
 			)
 
 			status, err := client.CreateRBD(device)
@@ -75,10 +75,7 @@ func TestDeleteRBD(t *testing.T) {
 		sampleName := "sampleRBD"
 
 		Convey("When os commands are executed correctly", func() {
-
-			gomock.InOrder(
-				mock.osMock.EXPECT().Command(rbdPath, "remove", sampleName).Return("", nil),
-			)
+			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "remove", sampleName).Return("", nil)
 
 			status, err := client.DeleteRBD(sampleName)
 
@@ -87,9 +84,7 @@ func TestDeleteRBD(t *testing.T) {
 		})
 
 		Convey("When format command goes wrong", func() {
-			gomock.InOrder(
-				mock.osMock.EXPECT().Command(rbdPath, "remove", sampleName).Return("", fmt.Errorf("some error!")),
-			)
+			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "remove", sampleName).Return("", fmt.Errorf("some error!"))
 
 			status, err := client.DeleteRBD(sampleName)
 

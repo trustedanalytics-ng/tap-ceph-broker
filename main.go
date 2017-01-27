@@ -22,9 +22,9 @@ import (
 	"github.com/gocraft/web"
 
 	"github.com/trustedanalytics/tap-ceph-broker/api"
-	innerOS "github.com/trustedanalytics/tap-ceph-broker/os"
 	httpGoCommon "github.com/trustedanalytics/tap-go-common/http"
 	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
+	commonOS "github.com/trustedanalytics/tap-go-common/os"
 )
 
 const (
@@ -35,7 +35,7 @@ const (
 var logger, _ = commonLogger.InitLogger("main")
 
 func main() {
-	sos := innerOS.StandardOS{}
+	sos := commonOS.StandardOS{}
 	context := api.Context{OS: sos}
 
 	router := api.SetupRouter(&context)
