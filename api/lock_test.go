@@ -122,8 +122,8 @@ func TestListLocks(t *testing.T) {
 	Convey("Testing ListLocks", t, func() {
 		mockCtrl, _, mock, client := prepareMocksAndClient(t)
 
-		for i, test := range tests {
-			Convey(fmt.Sprintf("For test case %d", i), func() {
+		for _, test := range tests {
+			Convey(fmt.Sprintf("For test case %s", test.testDescription), func() {
 				images := strings.Join(test.images, "\n")
 				images = images + "\n"
 				asserts := []*gomock.Call{mock.osMock.EXPECT().ExecuteCommand(rbdPath, "list").Return(images, nil)}
