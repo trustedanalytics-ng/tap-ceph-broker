@@ -91,8 +91,8 @@ func WriteJson(rw web.ResponseWriter, response interface{}, status_code int) err
 	rw.Header().Set("Content-Type", "application/json")
 	logger.Debug("Responding with status", status_code, " and JSON:", string(b))
 	rw.WriteHeader(status_code)
-	fmt.Fprintf(rw, "%s", string(b))
-	return nil
+	_, err = fmt.Fprintf(rw, "%s", string(b))
+	return err
 }
 
 func WriteJsonOrError(rw web.ResponseWriter, response interface{}, status int, err error) error {

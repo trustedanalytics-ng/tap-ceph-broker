@@ -16,24 +16,24 @@
 package client
 
 import (
-"testing"
+	"testing"
 
-. "github.com/smartystreets/goconvey/convey"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestNewCephBrokerBasicAuth(t *testing.T) {
 	Convey("Test NewCephBrokerBasicAuth with all arguments", t, func() {
 		cephClient, err := NewCephBrokerBasicAuth("address", "username", "password")
-		Convey("should return nil error",func() {
+		Convey("should return nil error", func() {
 			So(err, ShouldBeNil)
 		})
-		Convey("Client address should be set to defined address",func() {
+		Convey("Client address should be set to defined address", func() {
 			So(cephClient.Address, ShouldEqual, "address")
 		})
-		Convey("Client username should be set to defined username",func() {
+		Convey("Client username should be set to defined username", func() {
 			So(cephClient.Username, ShouldEqual, "username")
 		})
-		Convey("Client password should be set to defined password",func() {
+		Convey("Client password should be set to defined password", func() {
 			So(cephClient.Password, ShouldEqual, "password")
 		})
 	})

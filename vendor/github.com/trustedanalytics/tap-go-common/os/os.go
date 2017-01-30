@@ -27,8 +27,5 @@ type StandardOS struct {
 
 func (c StandardOS) ExecuteCommand(name string, arg ...string) (string, error) {
 	result, err := exec.Command(name, arg...).CombinedOutput()
-	if err != nil {
-		return "", err
-	}
-	return string(result), nil
+	return string(result), err
 }
