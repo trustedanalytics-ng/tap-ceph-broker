@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Intel Corporation
+ * Copyright (c) 2017 Intel Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package util
+package os
 
-import (
-	"os"
-	"os/signal"
-	"sync"
-)
+import "os/exec"
 
-func GetTerminationObserverChannel() chan os.Signal {
-	channel := make(chan os.Signal, 1)
-	signal.Notify(channel, os.Interrupt)
-	return channel
+type OS interface {
+	ExecuteCommand(name string, arg ...string) (string, error)
 }
 
-func TerminationObserver(waitGroup *sync.WaitGroup, appName string) {
-	<-GetTerminationObserverChannel()
-	logger.Info(appName, "is going to be stopped now...")
-	waitGroup.Wait()
-	logger.Info(appName, "stopped!")
-	os.Exit(0)
+type StandardOS struct {
+}
+
+func (c StandardOS) ExecuteCommand(name string, arg ...string) (string, error) {
+	result, err := exec.Command(name, arg...).CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return string(result), nil
 }

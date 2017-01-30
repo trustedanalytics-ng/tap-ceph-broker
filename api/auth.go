@@ -21,7 +21,7 @@ import (
 
 	"github.com/gocraft/web"
 
-	"github.com/trustedanalytics/tap-go-common/util"
+	commonHttp "github.com/trustedanalytics/tap-go-common/http"
 )
 
 // BasicAuthorizeMiddleware authorizes user with credentials taken from envs
@@ -30,7 +30,7 @@ func (c *Context) BasicAuthorizeMiddleware(rw web.ResponseWriter, req *web.Reque
 	username, password, isOK := req.BasicAuth()
 	if !isOK || username != os.Getenv("CEPH_BROKER_USER") || password != os.Getenv("CEPH_BROKER_PASS") {
 		logger.Info("EnforceAuthMiddleware - BasicAuth: Invalid Basic Auth credentials")
-		util.RespondUnauthorized(rw)
+		commonHttp.RespondUnauthorized(rw)
 		return
 	}
 	logger.Info("EnforceAuthMiddleware - BasicAuth: User authenticated as ", username)

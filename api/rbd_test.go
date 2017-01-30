@@ -17,10 +17,93 @@
 package api
 
 import (
+	"fmt"
+	"net/http"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	. "github.com/smartystreets/goconvey/convey"
 
 	"github.com/trustedanalytics/tap-ceph-broker/model"
 )
+
+func TestCreateRBD(t *testing.T) {
+	Convey("Testing CreateRBD", t, func() {
+		mockCtrl, _, mock, client := prepareMocksAndClient(t)
+		sampleName := "sampleRBD"
+		var sampleSize uint64 = 1000
+		sampleFS := model.XFS
+		device := model.RBD{ImageName: sampleName, Size: sampleSize, FileSystem: sampleFS}
+		sampleDevice := "/dev/rbd1"
+
+		Convey("When os commands are executed correctly", func() {
+			gomock.InOrder(
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "create", sampleName, fmt.Sprintf("--size=%d", sampleSize), "--image-feature=layering").Return("", nil),
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "map", sampleName).Return(sampleDevice, nil),
+				mock.osMock.EXPECT().ExecuteCommand("/sbin/mkfs."+sampleFS, sampleDevice).Return("", nil),
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "unmap", sampleName).Return("", nil),
+			)
+
+			status, err := client.CreateRBD(device)
+
+			So(status, ShouldEqual, http.StatusOK)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("When format command goes wrong", func() {
+			gomock.InOrder(
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "create", sampleName, fmt.Sprintf("--size=%d", sampleSize), "--image-feature=layering").Return("", nil),
+				mock.osMock.EXPECT().ExecuteCommand(rbdPath, "map", sampleName).Return(sampleDevice, nil),
+				mock.osMock.EXPECT().ExecuteCommand("/sbin/mkfs."+sampleFS, sampleDevice).Return("", fmt.Errorf("some error!")),
+			)
+
+			status, err := client.CreateRBD(device)
+
+			So(status, ShouldEqual, http.StatusInternalServerError)
+			So(err, ShouldNotBeNil)
+		})
+
+		Reset(func() {
+			mockCtrl.Finish()
+		})
+	})
+}
+
+func TestDeleteRBD(t *testing.T) {
+	Convey("Testing DeleteRBD", t, func() {
+		mockCtrl, _, mock, client := prepareMocksAndClient(t)
+		sampleName := "sampleRBD"
+
+		Convey("When os commands are executed correctly", func() {
+			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "remove", sampleName).Return("", nil)
+
+			status, err := client.DeleteRBD(sampleName)
+
+			So(status, ShouldEqual, http.StatusNoContent)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("When format command goes wrong", func() {
+			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "remove", sampleName).Return("", fmt.Errorf("some error!"))
+
+			status, err := client.DeleteRBD(sampleName)
+
+			So(status, ShouldEqual, http.StatusInternalServerError)
+			So(err, ShouldNotBeNil)
+		})
+
+		Convey("When empty name is passed", func() {
+			status, err := client.DeleteRBD("")
+
+			So(status, ShouldEqual, http.StatusNotFound)
+			So(err, ShouldNotBeNil)
+		})
+
+		Reset(func() {
+			mockCtrl.Finish()
+		})
+	})
+}
 
 func TestValidateRBD(t *testing.T) {
 	testCases := []struct {

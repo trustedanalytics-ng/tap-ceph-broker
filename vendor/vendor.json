@@ -9,6 +9,12 @@
 			"revisionTime": "2015-12-31T19:58:24Z"
 		},
 		{
+			"checksumSHA1": "JSHl8b3nI8EWvzm+uyrIqj2Hiu4=",
+			"path": "github.com/golang/mock/gomock",
+			"revision": "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9",
+			"revisionTime": "2016-01-21T18:51:14Z"
+		},
+		{
 			"checksumSHA1": "qNkIUixj3jVNhiqKG/g6G+MbAJE=",
 			"path": "github.com/golang/mock/mockgen",
 			"revision": "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9",
@@ -105,22 +111,22 @@
 			"revisionTime": "2016-09-27T13:15:50Z"
 		},
 		{
-			"checksumSHA1": "TMAWOipcdZIj8HqfHZqYrWh/two=",
+			"checksumSHA1": "7RfdPkLfJQzqkWrsTPnIqwWlUAQ=",
 			"path": "github.com/trustedanalytics/tap-go-common/http",
-			"revision": "57cb9e57f012c824b1fb95c578c63353f1470f8d",
-			"revisionTime": "2016-12-27T09:18:44Z"
+			"revision": "146cec9f677de9ac0c8366948b6315423d0de138",
+			"revisionTime": "2017-01-27T11:25:43Z"
 		},
 		{
 			"checksumSHA1": "O4sIfCHeupMT91S+wt73AAfH4bQ=",
 			"path": "github.com/trustedanalytics/tap-go-common/logger",
-			"revision": "57cb9e57f012c824b1fb95c578c63353f1470f8d",
-			"revisionTime": "2016-12-27T09:18:44Z"
+			"revision": "146cec9f677de9ac0c8366948b6315423d0de138",
+			"revisionTime": "2017-01-27T11:25:43Z"
 		},
 		{
-			"checksumSHA1": "05MzhouJMf4FGs8YGNGJ9c/mIpg=",
+			"checksumSHA1": "eoMUCBYFcInJYZv1GWo1Ths6TY8=",
 			"path": "github.com/trustedanalytics/tap-go-common/util",
-			"revision": "57cb9e57f012c824b1fb95c578c63353f1470f8d",
-			"revisionTime": "2016-12-27T09:18:44Z"
+			"revision": "146cec9f677de9ac0c8366948b6315423d0de138",
+			"revisionTime": "2017-01-27T11:25:43Z"
 		}
 	],
 	"rootPath": "github.com/trustedanalytics/tap-ceph-broker"

@@ -72,3 +72,7 @@ build_rpm: build_anywhere
 
 test: verify_gopath
 	go test --cover $(APP_DIR_LIST)
+
+mock_update:
+	$(GOBIN)/mockgen -source=vendor/github.com/trustedanalytics/tap-go-common/os/os.go -package=api -destination=api/os_mock_test.go
+	./add_license.sh

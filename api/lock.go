@@ -19,51 +19,52 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"os/exec"
 	"strings"
 
 	"github.com/gocraft/web"
+
 	"github.com/trustedanalytics/tap-ceph-broker/model"
-	"github.com/trustedanalytics/tap-go-common/util"
+	commonHttp "github.com/trustedanalytics/tap-go-common/http"
 )
 
-func filter_nonempty_lines(lines []string) []string {
-	nonempty_lines := []string{}
+func filterNonemptyLines(input string) []string {
+	lines := strings.Split(string(input), "\n")
+	nonemptyLines := []string{}
 	for _, l := range lines {
 		if len(strings.TrimSpace(l)) > 0 {
-			nonempty_lines = append(nonempty_lines, l)
+			nonemptyLines = append(nonemptyLines, l)
 		}
 	}
-	return nonempty_lines
+	return nonemptyLines
 }
 
-func listImages() ([]string, error) {
+func (c *Context) listImages() ([]string, error) {
 	logger.Debug("listImages")
-	output, err := exec.Command(rbdPath, "list").CombinedOutput()
+	output, err := c.OS.ExecuteCommand(rbdPath, "list")
 	if err != nil {
 		return []string{}, err
 	}
 	logger.Debug("listImages: rbd output: ", string(output))
-	image_lines := filter_nonempty_lines(strings.Split(string(output), "\n"))
-	return image_lines, nil
+	imageLines := filterNonemptyLines(output)
+	return imageLines, nil
 }
 
-func lockListForImage(imageName string) ([]model.Lock, error) {
+func (c *Context) lockListForImage(imageName string) ([]model.Lock, error) {
 	logger.Debug("lockListForImage: getting locks for image", imageName)
 	out := []model.Lock{}
-	output, err := exec.Command(rbdPath, "lock", "list", imageName).CombinedOutput()
+	output, err := c.OS.ExecuteCommand(rbdPath, "lock", "list", imageName)
 	if err != nil {
 		return out, err
 	}
 	logger.Debug("lockListForImage: rbd output: ", string(output))
-	lock_lines := filter_nonempty_lines(strings.Split(string(output), "\n"))
+	lockLines := filterNonemptyLines(output)
 
-	for i, nonempty_lock_line := range lock_lines {
+	for i, nonemptyLockLine := range lockLines {
 		if i < 2 {
 			continue // skip header and 'There is 1 exclusive lock on this image.' line
 		}
 
-		fields := strings.Fields(nonempty_lock_line)
+		fields := strings.Fields(nonemptyLockLine)
 		if len(fields) < 3 {
 			continue
 		}
@@ -81,32 +82,30 @@ func lockListForImage(imageName string) ([]model.Lock, error) {
 	return out, nil
 }
 
-func allLocks() ([]model.Lock, error) {
+func (c *Context) allLocks() ([]model.Lock, error) {
 	logger.Debug("allLocks")
 	locks := []model.Lock{}
-	images, err := listImages()
+	images, err := c.listImages()
 	logger.Info("allLocks: images", images)
 	if err != nil {
 		return locks, err
 	}
 	for _, image := range images {
 		logger.Info("allLocks: getting locks for image", image)
-		imageLocks, err := lockListForImage(image)
+		imageLocks, err := c.lockListForImage(image)
 		if err != nil {
 			return locks, err
 		}
-		for _, imageLock := range imageLocks {
-			locks = append(locks, imageLock)
-		}
+		locks = append(locks, imageLocks...)
 	}
 	return locks, nil
 }
 
-func removeLock(lock model.Lock) error {
+func (c *Context) removeLock(lock model.Lock) error {
 	logger.Info("removeLock:", lock)
-	output, err := exec.Command(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).CombinedOutput()
+	output, err := c.OS.ExecuteCommand(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker)
 	if err != nil {
-		logger.Info("removeLock: FAILED:", err, string(output))
+		logger.Error("removeLock: FAILED:", err, string(output))
 		return err
 	}
 	logger.Info("removeLock: SUCCESS.")
@@ -114,15 +113,15 @@ func removeLock(lock model.Lock) error {
 }
 
 func (c *Context) ListLocks(rw web.ResponseWriter, req *web.Request) {
-	locks, err := allLocks()
+	locks, err := c.allLocks()
 	if err != nil {
-		util.Respond500(rw, err)
+		commonHttp.Respond500(rw, err)
 		return
 	}
 
-	if err = util.WriteJson(rw, locks, http.StatusOK); err != nil {
+	if err = commonHttp.WriteJson(rw, locks, http.StatusOK); err != nil {
 		err = fmt.Errorf("cannot parse response: %v", err)
-		util.Respond500(rw, err)
+		commonHttp.Respond500(rw, err)
 		return
 	}
 
@@ -135,9 +134,9 @@ func (c *Context) DeleteLock(rw web.ResponseWriter, req *web.Request) {
 
 	lock := model.Lock{LockName: strings.Replace(lockName, "\"", "", -1), ImageName: imageName, Locker: locker}
 
-	err := removeLock(lock)
+	err := c.removeLock(lock)
 	if err != nil {
-		util.Respond500(rw, err)
+		commonHttp.Respond500(rw, err)
 		return
 	}
 

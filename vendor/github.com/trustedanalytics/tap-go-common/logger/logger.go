@@ -26,11 +26,11 @@ import (
 
 const (
 	LevelCritical = "CRITICAL"
-	LevelError = "ERROR"
-	LevelWarning = "WARNING"
-	LevelNotice = "NOTICE"
-	LevelInfo = "INFO"
-	LevelDebug = "DEBUG"
+	LevelError    = "ERROR"
+	LevelWarning  = "WARNING"
+	LevelNotice   = "NOTICE"
+	LevelInfo     = "INFO"
+	LevelDebug    = "DEBUG"
 )
 
 func validateLogLevel(level string) error {
