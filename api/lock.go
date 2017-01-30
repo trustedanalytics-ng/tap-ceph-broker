@@ -31,6 +31,12 @@ func filterNonemptyLines(input string) []string {
 	lines := strings.Split(string(input), "\n")
 	nonemptyLines := []string{}
 	for _, l := range lines {
+		// FIXME - workaround for Ceph warnings due to invalid ceph.conf
+		if strings.HasPrefix(l, "warning:") {
+			logger.Info("Skipping line:", l)
+			continue
+		}
+		
 		if len(strings.TrimSpace(l)) > 0 {
 			nonemptyLines = append(nonemptyLines, l)
 		}
