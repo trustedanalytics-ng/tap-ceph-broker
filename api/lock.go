@@ -36,7 +36,7 @@ func filterNonemptyLines(input string) []string {
 			logger.Info("Skipping line:", l)
 			continue
 		}
-		
+
 		if len(strings.TrimSpace(l)) > 0 {
 			nonemptyLines = append(nonemptyLines, l)
 		}
