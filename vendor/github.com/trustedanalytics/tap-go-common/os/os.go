@@ -20,12 +20,18 @@ import "os/exec"
 
 type OS interface {
 	ExecuteCommand(name string, arg ...string) (string, error)
+	ExecuteCommandCombinedOutput(name string, arg ...string) (string, error)
 }
 
 type StandardOS struct {
 }
 
 func (c StandardOS) ExecuteCommand(name string, arg ...string) (string, error) {
+	result, err := exec.Command(name, arg...).Output()
+	return string(result), err
+}
+
+func (c StandardOS) ExecuteCommandCombinedOutput(name string, arg ...string) (string, error) {
 	result, err := exec.Command(name, arg...).CombinedOutput()
 	return string(result), err
 }

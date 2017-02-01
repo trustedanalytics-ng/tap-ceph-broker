@@ -180,7 +180,7 @@ func TestDeleteLock(t *testing.T) {
 
 		Convey("When deleting lock exists", func() {
 			lock := model.Lock{ImageName: sampleImage1, LockName: sampleID1, Locker: sampleLocker1, Address: sampleAddress1}
-			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).Return("", nil)
+			mock.osMock.EXPECT().ExecuteCommandCombinedOutput(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).Return("", nil)
 
 			status, err := client.DeleteLock(lock)
 
@@ -190,7 +190,7 @@ func TestDeleteLock(t *testing.T) {
 
 		Convey("When deleting lock return error", func() {
 			lock := model.Lock{ImageName: sampleImage1, LockName: sampleID1, Locker: sampleLocker1, Address: sampleAddress1}
-			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).Return("", fmt.Errorf("some error"))
+			mock.osMock.EXPECT().ExecuteCommandCombinedOutput(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker).Return("", fmt.Errorf("some error"))
 
 			status, err := client.DeleteLock(lock)
 

@@ -75,7 +75,7 @@ func TestDeleteRBD(t *testing.T) {
 		sampleName := "sampleRBD"
 
 		Convey("When os commands are executed correctly", func() {
-			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "remove", sampleName).Return("", nil)
+			mock.osMock.EXPECT().ExecuteCommandCombinedOutput(rbdPath, "remove", sampleName).Return("", nil)
 
 			status, err := client.DeleteRBD(sampleName)
 
@@ -84,7 +84,7 @@ func TestDeleteRBD(t *testing.T) {
 		})
 
 		Convey("When format command goes wrong", func() {
-			mock.osMock.EXPECT().ExecuteCommand(rbdPath, "remove", sampleName).Return("", fmt.Errorf("some error!"))
+			mock.osMock.EXPECT().ExecuteCommandCombinedOutput(rbdPath, "remove", sampleName).Return("", fmt.Errorf("some error!"))
 
 			status, err := client.DeleteRBD(sampleName)
 

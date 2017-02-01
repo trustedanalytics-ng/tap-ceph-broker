@@ -58,3 +58,19 @@ func (_mr *_MockOSRecorder) ExecuteCommand(arg0 interface{}, arg1 ...interface{}
 	_s := append([]interface{}{arg0}, arg1...)
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "ExecuteCommand", _s...)
 }
+
+func (_m *MockOS) ExecuteCommandCombinedOutput(name string, arg ...string) (string, error) {
+	_s := []interface{}{name}
+	for _, _x := range arg {
+		_s = append(_s, _x)
+	}
+	ret := _m.ctrl.Call(_m, "ExecuteCommandCombinedOutput", _s...)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+func (_mr *_MockOSRecorder) ExecuteCommandCombinedOutput(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
+	_s := append([]interface{}{arg0}, arg1...)
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "ExecuteCommandCombinedOutput", _s...)
+}

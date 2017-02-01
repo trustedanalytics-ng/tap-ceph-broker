@@ -48,6 +48,7 @@ func (c *Context) listImages() ([]string, error) {
 	logger.Debug("listImages")
 	output, err := c.OS.ExecuteCommand(rbdPath, "list")
 	if err != nil {
+		logger.Errorf("listImages: FAILED: %v", err)
 		return []string{}, err
 	}
 	logger.Debug("listImages: rbd output: ", string(output))
@@ -60,6 +61,7 @@ func (c *Context) lockListForImage(imageName string) ([]model.Lock, error) {
 	out := []model.Lock{}
 	output, err := c.OS.ExecuteCommand(rbdPath, "lock", "list", imageName)
 	if err != nil {
+		logger.Errorf("lockListForImage: FAILED: %v", err)
 		return out, err
 	}
 	logger.Debug("lockListForImage: rbd output: ", string(output))
@@ -109,7 +111,7 @@ func (c *Context) allLocks() ([]model.Lock, error) {
 
 func (c *Context) removeLock(lock model.Lock) error {
 	logger.Info("removeLock:", lock)
-	output, err := c.OS.ExecuteCommand(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker)
+	output, err := c.OS.ExecuteCommandCombinedOutput(rbdPath, "lock", "remove", lock.ImageName, lock.LockName, lock.Locker)
 	if err != nil {
 		logger.Error("removeLock: FAILED:", err, string(output))
 		return err

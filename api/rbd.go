@@ -89,7 +89,7 @@ func (c *Context) rbdUnmap(name string) error {
 }
 
 func (c *Context) rbdRemove(name string) error {
-	if output, err := c.OS.ExecuteCommand(rbdPath, "remove", name); err != nil {
+	if output, err := c.OS.ExecuteCommandCombinedOutput(rbdPath, "remove", name); err != nil {
 		if rbdNotFound(string(output)) {
 			return errNotFound
 		}
