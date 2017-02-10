@@ -34,8 +34,8 @@ deps_fetch_specific: bin/govendor
 	$(GOBIN)/govendor fetch -v $(DEP_URL)
 
 deps_update_tap: verify_gopath
-	$(GOBIN)/govendor update github.com/trustedanalytics/...
-	$(GOBIN)/govendor remove github.com/trustedanalytics/$(APP_NAME)/...
+	$(GOBIN)/govendor update github.com/trustedanalytics-ng/...
+	$(GOBIN)/govendor remove github.com/trustedanalytics-ng/$(APP_NAME)/...
 	@echo "Done"
 
 verify_gopath:
@@ -51,13 +51,13 @@ tests: verify_gopath
 	go test --cover $(APP_DIR_LIST)
 
 prepare_dirs:
-	mkdir -p ./temp/src/github.com/trustedanalytics/tap-ceph-broker
+	mkdir -p ./temp/src/github.com/trustedanalytics-ng/tap-ceph-broker
 	$(eval REPOFILES=$(shell pwd)/*)
-	ln -sf $(REPOFILES) temp/src/github.com/trustedanalytics/tap-ceph-broker
+	ln -sf $(REPOFILES) temp/src/github.com/trustedanalytics-ng/tap-ceph-broker
 
 build_anywhere: prepare_dirs
 	$(eval GOPATH=$(shell cd ./temp; pwd))
-	$(eval APP_DIR_LIST=$(shell GOPATH=$(GOPATH) go list ./temp/src/github.com/trustedanalytics/tap-ceph-broker/... | grep -v /vendor/))
+	$(eval APP_DIR_LIST=$(shell GOPATH=$(GOPATH) go list ./temp/src/github.com/trustedanalytics-ng/tap-ceph-broker/... | grep -v /vendor/))
 	GOPATH=$(GOPATH) CGO_ENABLED=0 go build -tags netgo $(APP_DIR_LIST)
 	rm -Rf application && mkdir application
 	cp -RL ./tap-ceph-broker ./application/tap-ceph-broker
@@ -74,5 +74,5 @@ test: verify_gopath
 	go test --cover $(APP_DIR_LIST)
 
 mock_update:
-	$(GOBIN)/mockgen -source=vendor/github.com/trustedanalytics/tap-go-common/os/os.go -package=api -destination=api/os_mock_test.go
+	$(GOBIN)/mockgen -source=vendor/github.com/trustedanalytics-ng/tap-go-common/os/os.go -package=api -destination=api/os_mock_test.go
 	./add_license.sh

@@ -25,7 +25,7 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
 
-	"github.com/trustedanalytics/tap-ceph-broker/model"
+	"github.com/trustedanalytics-ng/tap-ceph-broker/model"
 )
 
 const (

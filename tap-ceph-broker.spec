@@ -6,7 +6,7 @@ Release:	1%{?dist}
 Summary:	Application for managing CEPH resources needed by TAP core services
 
 License:	ASL 2.0
-URL:		https://github.com/trustedanalytics/tap-ceph-broker
+URL:		https://github.com/trustedanalytics-ng/tap-ceph-broker
 Source0:	tap-ceph-broker
 
 %description

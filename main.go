@@ -21,10 +21,10 @@ import (
 
 	"github.com/gocraft/web"
 
-	"github.com/trustedanalytics/tap-ceph-broker/api"
-	httpGoCommon "github.com/trustedanalytics/tap-go-common/http"
-	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
-	commonOS "github.com/trustedanalytics/tap-go-common/os"
+	"github.com/trustedanalytics-ng/tap-ceph-broker/api"
+	httpGoCommon "github.com/trustedanalytics-ng/tap-go-common/http"
+	commonLogger "github.com/trustedanalytics-ng/tap-go-common/logger"
+	commonOS "github.com/trustedanalytics-ng/tap-go-common/os"
 )
 
 const (

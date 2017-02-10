@@ -17,8 +17,8 @@
 package api
 
 import (
-	commonLogger "github.com/trustedanalytics/tap-go-common/logger"
-	"github.com/trustedanalytics/tap-go-common/os"
+	commonLogger "github.com/trustedanalytics-ng/tap-go-common/logger"
+	"github.com/trustedanalytics-ng/tap-go-common/os"
 )
 
 var logger, _ = commonLogger.InitLogger("api")

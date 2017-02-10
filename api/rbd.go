@@ -23,8 +23,8 @@ import (
 	"strings"
 
 	"github.com/gocraft/web"
-	"github.com/trustedanalytics/tap-ceph-broker/model"
-	commonHttp "github.com/trustedanalytics/tap-go-common/http"
+	"github.com/trustedanalytics-ng/tap-ceph-broker/model"
+	commonHttp "github.com/trustedanalytics-ng/tap-go-common/http"
 )
 
 const rbdPath = "/usr/bin/rbd"
